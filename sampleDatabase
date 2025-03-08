@@ -1,0 +1,103 @@
+create database lawrecords;
+use lawrecords;
+
+CREATE TABLE users (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    role ENUM('Lawyer', 'Client') NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE lawyers (
+	-- lawyer name-- 
+    lawyer_id INT PRIMARY KEY AUTO_INCREMENT,
+    specialization VARCHAR(255) NOT NULL,
+    license_number VARCHAR(255) UNIQUE NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE clients (
+    client_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    phone_number VARCHAR(15),
+    address TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE cases (
+    case_id INT PRIMARY KEY AUTO_INCREMENT,
+    client_id INT,
+    lawyer_id INT,
+    case_number VARCHAR(255) UNIQUE NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    case_type VARCHAR(255) NOT NULL,
+    status ENUM('Open', 'In Progress', 'Closed', 'On Hold') NOT NULL,
+    court_name VARCHAR(255),
+    hearing_date DATETIME,
+    verdict TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES clients(client_id) ON DELETE CASCADE,
+    FOREIGN KEY (lawyer_id) REFERENCES lawyers(lawyer_id) ON DELETE SET NULL
+);
+
+CREATE TABLE case_documents (
+    document_id INT PRIMARY KEY AUTO_INCREMENT,
+    case_id INT,
+    document_type ENUM('Legal Document', 'Evidence', 'Discovery', 'Witness Statement') NOT NULL,
+    evidence TEXT,
+    discoveries TEXT,
+    witness_statements TEXT,
+    file_path VARCHAR(255),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (case_id) REFERENCES cases(case_id) ON DELETE CASCADE
+);
+
+CREATE TABLE time_tracking (
+    entry_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT, /*lawyer_id*/
+    case_id INT,
+    hours_logged DECIMAL(5,2),
+    task_description TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (case_id) REFERENCES cases(case_id) ON DELETE CASCADE
+);
+
+
+INSERT INTO users (username, password_hash, email, role) VALUES
+('Rajesh Kumar', 'hashed_password_1', 'rajesh.kumar@example.com', 'Lawyer'),
+('Priya Sharma', 'hashed_password_2', 'priya.sharma@example.com', 'Client'),
+('Amit Singh', 'hashed_password_3', 'amit.singh@example.com', 'Lawyer'),
+('Neha Reddy', 'hashed_password_4', 'neha.reddy@example.com', 'Client'),
+('Ravi Patel', 'hashed_password_5', 'ravi.patel@example.com', 'Lawyer'),
+('Sita Verma', 'hashed_password_6', 'sita.verma@example.com', 'Client'),
+('Anil Gupta', 'hashed_password_7', 'anil.gupta@example.com', 'Lawyer'),
+('Sneha Iyer', 'hashed_password_8', 'sneha.iyer@example.com', 'Client'),
+('Vikram Mehta', 'hashed_password_9', 'vikram.mehta@example.com', 'Lawyer'),
+('Madhavi Rao', 'hashed_password_10', 'madhavi.rao@example.com', 'Client');
+
+INSERT INTO lawyers (specialization, license_number) VALUES
+('Criminal Law', 'LN12345'),
+('Civil Law', 'LN12346'),
+('Family Law', 'LN12347'),
+('Corporate Law', 'LN12348'),
+('Intellectual Property Law', 'LN12349'),
+('Real Estate Law', 'LN12350'),
+('Taxation Law', 'LN12351'),
+('Environmental Law', 'LN12352'),
+('Immigration Law', 'LN12353'),
+('Labour Law', 'LN12354');
+
+select * from lawyers;
+
+select * from users;
