@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lawyer Dashboard - Law Records Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #EDE7F6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #333;
+        }
+        .header {
+            width: 100%;
+            background-color: #7214b6;
+            padding: 15px;
+            color: white;
+            text-align: center;
+            font-size: 40px;
+            font-weight: bold;
+            position: relative;
+        }
+        .menu-toggle {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .container {
+            display: flex;
+            flex: 1;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #512DA8;
+            padding: 15px;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            left: -280px;
+            top: 0;
+            padding-top: 80px;
+            transition: left 0.3s ease;
+            z-index: 100;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+        }
+        .sidebar.active {
+            left: 0;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            border-bottom: 1px solid white;
+        }
+        .sidebar ul li:hover {
+            background-color: #d7acd7;
+        }
+        .content-area {
+            padding: 20px;
+            flex: 1;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .section {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .hidden {
+            display: none;
+        }
+        .case-box, .status-box, .update-box {
+            background-color: #F3E5F5;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+            border-left: 6px solid #7214b6;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="menu-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </div>
+        LAWYER DASHBOARD
+    </div>
+    
+    <div class="container">
+        <nav class="sidebar" id="sidebar">
+            <ul>
+                <li onclick="showSection('home'); toggleSidebar()"><i class="fas fa-home"></i> Home</li>
+                <li onclick="showSection('assigned-cases'); toggleSidebar()"><i class="fas fa-briefcase"></i> Assigned Cases</li>
+                <li onclick="showSection('case-status'); toggleSidebar()"><i class="fas fa-bell"></i> Case Status</li>
+                <li onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</li>
+            </ul>
+        </nav>
+        
+        <div class="content-area" id="content">
+            <div id="home" class="section hidden">
+                <h2>Welcome, Lawyer</h2>
+                <p>Manage your assigned cases, review upcoming hearings, and track recent updates efficiently.</p>
+                <div class="update-box">
+                    <h3>Upcoming Hearings</h3>
+                    <p><strong>Case #201:</strong> Criminal Defense - Hearing on March 22, 2025</p>
+                    <p><strong>Location:</strong> District Court, Room 205</p>
+                </div>
+                <div class="update-box">
+                    <h3>Recent Updates</h3>
+                    <p><strong>March 15, 2025:</strong> Client document submission received for Case #203.</p>
+                </div>
+            </div>
+            
+            <div id="assigned-cases" class="section hidden">
+                <h2>Assigned Cases</h2>
+                <div class="case-box">
+                    <h3>Case #201 - Criminal Defense</h3>
+                    <p><strong>Client:</strong> John Doe</p>
+                    <p><strong>Filed:</strong> January 5, 2025</p>
+                    <p><strong>Next Hearing:</strong> March 22, 2025</p>
+                </div>
+                <div class="case-box">
+                    <h3>Case #202 - Civil Dispute</h3>
+                    <p><strong>Client:</strong> Jane Smith</p>
+                    <p><strong>Filed:</strong> February 12, 2025</p>
+                </div>
+            </div>
+            
+            <div id="case-status" class="section hidden">
+                <h2>Case Status</h2>
+                <div class="status-box">
+                    <p><strong>March 15, 2025:</strong> Case #201 - Client evidence submitted for review.</p>
+                </div>
+                <div class="status-box">
+                    <p><strong>March 10, 2025:</strong> Case #202 - Settlement negotiations ongoing.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+        }
+        function logout() {
+            alert("Logging out...");
+            window.location.href = "logout.html";
+        }
+        window.onload = function() {
+            showSection('home');
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Registration - Law Records Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            color: #4B0082;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        header {
+            background-color: #4B0082;
+            color: white;
+            padding: 20px 50px;
+            font-size: 36px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .registration-container {
+            background-color: #E6E6FA;
+            width: 50%;
+            margin: 40px auto;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-title {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #4B0082;
+        }
+        .registration-form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .form-group {
+            width: 100%;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            font-size: 16px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #4B0082;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        .submit-btn {
+            background-color: #4B0082;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 20px;
+        }
+        .submit-btn:hover {
+            background-color: #6A0DAD;
+        }
+    </style>
+</head>
+<body>
+    <header>Law Records Management System</header>
+
+    <div class="registration-container">
+        <h2 class="form-title">Complete Your Client Profile</h2>
+        <form class="registration-form" id="client-form">
+            <div class="form-group">
+                <label for="identification_no">Identification Number</label>
+                <input type="text" id="identification_no" required placeholder="National ID/SSN/Passport Number">
+            </div>
+            <div class="form-group">
+                <label for="identification_type">Identification Type</label>
+                <select id="identification_type" required>
+                    <option value="">Select ID type</option>
+                    <option value="National ID">National ID</option>
+                    <option value="Passport">Passport</option>
+                    <option value="Driver's License">Driver's License</option>
+                    <option value="Social Security Number">Social Security Number</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="emergency_contact">Emergency Contact Number</label>
+                <input type="tel" id="emergency_contact" required placeholder="Emergency contact phone number">
+            </div>
+            <div class="form-group">
+                <label for="emergency_contact_name">Emergency Contact Name</label>
+                <input type="text" id="emergency_contact_name" placeholder="Name of emergency contact person">
+            </div>
+            <div class="form-group">
+                <label for="relationship">Relationship</label>
+                <input type="text" id="relationship" placeholder="Relationship with emergency contact">
+            </div>
+            <button type="submit" class="submit-btn">Complete Registration</button>
+        </form>
+    </div>
+
+    <script>
+        // Check if user_id exists in localStorage when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            const userId = localStorage.getItem("user_id");
+            if (!userId) {
+                alert("User information not found. Please complete the first registration step.");
+                window.location.href = "/signup.html";
+            }
+        });
+
+        document.getElementById("client-form").addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            // Get user ID from localStorage
+            const userId = localStorage.getItem("user_id");
+            if (!userId) {
+                alert("User information not found. Please complete the first registration step.");
+                window.location.href = "/signup.html";
+                return;
+            }
+
+            const submitBtn = this.querySelector(".submit-btn");
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Submitting...";
+
+            try {
+                const response = await fetch("http://localhost:5000/signup/client", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        identification_no: document.getElementById("identification_no").value,
+                        identification_type: document.getElementById("identification_type").value,
+                        emergency_contact: document.getElementById("emergency_contact").value,
+                        emergency_contact_name: document.getElementById("emergency_contact_name").value,
+                        relationship: document.getElementById("relationship").value
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    alert(result.message);
+                    // Clear user_id from localStorage after successful registration
+                    localStorage.removeItem("user_id");
+                    // Redirect to login page
+                    window.location.href = "/login.html";
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Server error. Please try again.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Complete Registration";
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Dashboard - Law Records Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #EDE7F6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            color: #333;
+        }
+        .header {
+            width: 100%;
+            background-color: #7214b6;
+            padding: 15px;
+            color: white;
+            text-align: center;
+            font-size: 40px;
+            font-weight: bold;
+            position: relative;
+        }
+        .menu-toggle {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #512DA8;
+            padding: 15px;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            left: -280px;
+            top: 0;
+            padding-top: 80px;
+            transition: left 0.3s ease;
+            z-index: 100;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+        }
+        .sidebar.active {
+            left: 0;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 15px;
+            cursor: pointer;
+            border-bottom: 1px solid white;
+        }
+        .sidebar ul li:hover {
+            background-color: #d7acd7;
+        }
+        .content-area {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        .section {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            width: 100%;
+        }
+        .hidden {
+            display: none;
+        }
+        .popup {
+            background-color: #512DA8;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            width: 100%;
+            text-align: left;
+        }
+        .popup ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .popup ul li {
+            padding: 5px 0;
+        }
+        .profile-box {
+            background-color: #f9f3ff;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #7214b6;
+            margin-top: 20px;
+        }
+        #lawyers ul {
+            list-style: none;
+            padding: 0;
+        }
+        #lawyers ul li {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #6A0DAD;
+            font-weight: bold;
+        }
+        #lawyers ul li:hover {
+            background-color: #d7acd7;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 99;
+            display: none;
+        }
+        .overlay.active {
+            display: block;
+        }
+        .case-item {
+            background-color: #f9f3ff;
+            border-left: 4px solid #7214b6;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .case-item h3 {
+            margin-top: 0;
+            color: #512DA8;
+        }
+        .status-updates {
+            margin-top: 20px;
+        }
+        .status-item {
+            background-color: #f9f3ff;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #7214b6;
+        }
+        .status-date {
+            font-weight: bold;
+            color: #512DA8;
+        }
+        h2 {
+            color: #512DA8;
+            border-bottom: 2px solid #EDE7F6;
+            padding-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .btn {
+            background-color: #7214b6;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .lawyer-selector {
+            margin-top: 15px;
+        }
+        .lawyer-option {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .lawyer-option:hover {
+            background-color: #f9f3ff;
+        }
+        .lawyer-option input {
+            margin-right: 10px;
+        }
+        .success-message {
+            background-color: #66BB6A;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="menu-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </div>
+        LAW RECORDS MANAGEMENT SYSTEM
+    </div>
+    
+    <div class="overlay" onclick="toggleSidebar()"></div>
+    
+    <div class="container">
+        <nav class="sidebar" id="sidebar">
+            <ul>
+                <li onclick="showSection('home'); toggleSidebar()"><i class="fas fa-home"></i> Home</li>
+                <li onclick="showSection('cases'); toggleSidebar()"><i class="fas fa-briefcase"></i> Active Cases</li>
+                <li onclick="showSection('add-case'); toggleSidebar()"><i class="fas fa-plus-circle"></i> Add Case</li>
+                <li onclick="showSection('status'); toggleSidebar()"><i class="fas fa-bell"></i> Status Updates</li>
+                <li onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</li>
+            </ul>
+        </nav>
+        
+        <div class="content-area" id="content">
+            <div id="home" class="section hidden">
+                <h2><i class="fas fa-tachometer-alt"></i> DASHBOARD OVERVIEW</h2>
+                <p>Manage your legal matters efficiently with quick access to your cases, lawyers, and status updates all in just a few clicks!</p>
+                
+                <div class="profile-box">
+                    <h3>UPCOMING HEARINGS</h3>
+                    <p><strong>Case #101:</strong> Property Dispute - Hearing #3 on March 20, 2025</p>
+                    <p><strong>Location:</strong> County Courthouse, Room 304</p>
+                    <p><strong>Required Documents:</strong> Title Deed, Survey Report, Property Tax Records</p>
+                </div>
+
+                <div class="profile-box">
+                    <h3>RECENT UPDATES</h3>
+                    <p><strong>March 15, 2025:</strong> Document submission for Case #102 received.</p>
+                    <p><strong>March 10, 2025:</strong> Hearing date confirmed for Case #101.</p>
+                </div>
+            </div>
+            
+            <div id="cases" class="section hidden">
+                <h2><i class="fas fa-briefcase"></i> ACTIVE CASES</h2>
+                
+                <div class="case-item">
+                    <h3>Case #101 - Property Dispute</h3>
+                    <p><strong>Filed:</strong> January 12, 2025</p>
+                    <p><strong>Opposing Party:</strong> Green Valley Corporation</p>
+                    <p><strong>Next Hearing:</strong> March 20, 2025</p>
+                    <p><strong>Status:</strong> <span style="color: #EF5350; font-weight: bold;">URGENT - HEARING IN 3 DAYS</span></p>
+                </div>
+                
+                <div class="case-item">
+                    <h3>Case #102 - Contract Breach</h3>
+                    <p><strong>Filed:</strong> February 5, 2025</p>
+                    <p><strong>Opposing Party:</strong> Sunrise Industries Ltd.</p>
+                    <p><strong>Next Hearing:</strong> April 5, 2025</p>
+                    <p><strong>Status:</strong> <span style="color: #66BB6A; font-weight: bold;">DOCUMENT REVIEW IN PROGRESS</span></p>
+                </div>
+                
+                <div class="case-item">
+                    <h3>Case #103 - Family Law</h3>
+                    <p><strong>Filed:</strong> March 1, 2025</p>
+                    <p><strong>Case Type:</strong> Inheritance Dispute</p>
+                    <p><strong>Next Hearing:</strong> May 10, 2025</p>
+                    <p><strong>Status:</strong> <span style="color: #FFD54F; font-weight: bold;">INITIAL FILING COMPLETE</span></p>
+                </div>
+                
+                <div id="new-cases-container">
+                    <!-- New cases will be added here -->
+                </div>
+            </div>
+            
+            <div id="add-case" class="section hidden">
+                <h2><i class="fas fa-plus-circle"></i> ADD A NEW CASE</h2>
+                <form id="case-form">
+                    <div class="form-group">
+                        <label for="case-title">Case Title:</label>
+                        <input type="text" id="case-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="case-type">Case Type:</label>
+                        <select id="case-type" required onchange="updateLawyerList()">
+                            <option value="">-- Select Case Type --</option>
+                            <option value="criminal">Criminal Law</option>
+                            <option value="civil">Civil Law</option>
+                            <option value="corporate">Corporate Law</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filing-date">Filing Date:</label>
+                        <input type="date" id="filing-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="opposing-party">Opposing Party (if applicable):</label>
+                        <input type="text" id="opposing-party">
+                    </div>
+                    <div class="form-group">
+                        <label>Select a Lawyer:</label>
+                        <div id="lawyer-list" class="lawyer-selector">
+                            <p>Please select a case type first to see available lawyers</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn" onclick="submitCase()">Submit Case</button>
+                </form>
+                <div id="submission-result"></div>
+            </div>
+            
+            <div id="status" class="section hidden">
+                <h2><i class="fas fa-bell"></i> STATUS UPDATES</h2>
+                
+                <div class="status-updates">
+                    <div class="status-item">
+                        <p class="status-date">March 15, 2025</p>
+                        <p><strong>Case #102:</strong> Document submission received. Your lawyer is reviewing the contract breach evidence.</p>
+                    </div>
+                    
+                    <div class="status-item">
+                        <p class="status-date">March 10, 2025</p>
+                        <p><strong>Case #101:</strong> Hearing date confirmed for March 20, 2025. Required documents list updated.</p>
+                    </div>
+                    
+                    <div class="status-item">
+                        <p class="status-date">March 5, 2025</p>
+                        <p><strong>Case #103:</strong> Initial filing complete. First hearing scheduled for May 10, 2025.</p>
+                    </div>
+                    
+                    <div class="status-item">
+                        <p class="status-date">February 28, 2025</p>
+                        <p><strong>Case #102:</strong> Expert witness testimony scheduled for April 2, 2025.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Lawyer data by specialization
+        const lawyers = {
+            'criminal': [
+                {id: 'c1', name: 'John Doe', contact: '1234567890'},
+                {id: 'c2', name: 'Mike Johnson', contact: '9876543210'}
+            ],
+            'civil': [
+                {id: 'cv1', name: 'Jane Smith', contact: '0987654321'},
+                {id: 'cv2', name: 'Emily Davis', contact: '5566778899'}
+            ],
+            'corporate': [
+                {id: 'co1', name: 'Alan White', contact: '1122334455'},
+                {id: 'co2', name: 'Robert Brown', contact: '2233445566'}
+            ]
+        };
+
+        let caseCounter = 104; // Start with case #104 since we already have cases 101-103
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(section => section.classList.add('hidden'));
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+        
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.querySelector('.overlay').classList.toggle('active');
+        }
+
+        function updateLawyerList() {
+            const caseType = document.getElementById('case-type').value;
+            const lawyerListContainer = document.getElementById('lawyer-list');
+            
+            if (!caseType) {
+                lawyerListContainer.innerHTML = '<p>Please select a case type first to see available lawyers</p>';
+                return;
+            }
+            
+            const availableLawyers = lawyers[caseType];
+            let lawyerOptions = '';
+            
+            availableLawyers.forEach(lawyer => {
+                lawyerOptions += `
+                <div class="lawyer-option">
+                    <input type="radio" name="selected-lawyer" id="${lawyer.id}" value="${lawyer.id}">
+                    <label for="${lawyer.id}">${lawyer.name} - Contact: ${lawyer.contact}</label>
+                </div>`;
+            });
+            
+            lawyerListContainer.innerHTML = lawyerOptions;
+        }
+
+        function submitCase() {
+            // Get form values
+            const caseTitle = document.getElementById('case-title').value;
+            const caseType = document.getElementById('case-type').value;
+            const filingDate = document.getElementById('filing-date').value;
+            const opposingParty = document.getElementById('opposing-party').value;
+            const selectedLawyer = document.querySelector('input[name="selected-lawyer"]:checked');
+            
+            // Form validation
+            if (!caseTitle || !caseType || !filingDate || !selectedLawyer) {
+                alert('Please fill in all required fields and select a lawyer');
+                return;
+            }
+            
+            // Get lawyer info
+            const lawyerId = selectedLawyer.value;
+            const lawyerInfo = getLawyerById(lawyerId, caseType);
+            
+            // Create new case
+            createNewCase(caseTitle, caseType, filingDate, opposingParty, lawyerInfo);
+            
+            // Show success message
+            document.getElementById('submission-result').innerHTML = 
+                `<div class="success-message">
+                    <i class="fas fa-check-circle"></i> Case successfully added! 
+                    <a href="#" onclick="showSection('cases'); return false;">View in Active Cases</a>
+                </div>`;
+            
+            // Reset form
+            document.getElementById('case-form').reset();
+            document.getElementById('lawyer-list').innerHTML = '<p>Please select a case type first to see available lawyers</p>';
+        }
+        
+        function getLawyerById(id, caseType) {
+            return lawyers[caseType].find(lawyer => lawyer.id === id);
+        }
+        
+        function createNewCase(title, type, date, opposingParty, lawyer) {
+            const caseNumber = caseCounter++;
+            const formattedDate = formatDate(date);
+            
+            // Format the case type for display
+            const caseTypeDisplay = type.charAt(0).toUpperCase() + type.slice(1);
+            
+            // Create a new case element
+            const newCase = document.createElement('div');
+            newCase.className = 'case-item';
+            newCase.innerHTML = `
+                <h3>Case #${caseNumber} - ${title}</h3>
+                <p><strong>Filed:</strong> ${formattedDate}</p>
+                <p><strong>Case Type:</strong> ${caseTypeDisplay} Law</p>
+                ${opposingParty ? `<p><strong>Opposing Party:</strong> ${opposingParty}</p>` : ''}
+                <p><strong>Assigned Lawyer:</strong> ${lawyer.name} (${lawyer.contact})</p>
+                <p><strong>Status:</strong> <span style="color: #FFD54F; font-weight: bold;">INITIAL FILING COMPLETE</span></p>
+            `;
+            
+            // Add to the active cases section
+            document.getElementById('new-cases-container').appendChild(newCase);
+            
+            // Also add a status update
+            addStatusUpdate(caseNumber, title);
+        }
+        
+        function addStatusUpdate(caseNumber, title) {
+            const today = new Date();
+            const formattedDate = formatDate(today.toISOString().split('T')[0]);
+            
+            const statusItem = document.createElement('div');
+            statusItem.className = 'status-item';
+            statusItem.innerHTML = `
+                <p class="status-date">${formattedDate}</p>
+                <p><strong>Case #${caseNumber}:</strong> Initial filing for "${title}" complete. Lawyer assigned and case processing started.</p>
+            `;
+            
+            // Add to the beginning of status updates
+            const statusUpdatesContainer = document.querySelector('.status-updates');
+            statusUpdatesContainer.insertBefore(statusItem, statusUpdatesContainer.firstChild);
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+        }
+        
+        function logout() {
+            alert("Logging out...");
+            window.location.href = "logout.html";
+        }
+    
+        // Automatically open the Home section on page load
+        window.onload = function() {
+            showSection('home');
+        };
+    </script>
+</body>
+</html>

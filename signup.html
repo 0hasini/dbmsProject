@@ -3,129 +3,315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign-Up - Law Records Management</title>
+    <title>Sign Up - Law Records Management System</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: white;
+            color: #4B0082;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            text-align: center;
         }
-        .navbar {
-            background-color: #6a0dad;
-            padding: 15px;
+        header {
+            background-color: #4B0082;
+            color: white;
+            padding: 20px 50px;
+            font-size: 36px;
+            font-weight: bold;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: white;
-        }
-        .navbar a {
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-        .title {
-            font-size: 24px;
-            font-weight: bold;
-            color: white;
-        }
-        .main-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 80vh;
         }
         .signup-container {
-            background: #d3a5f4;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            width: 380px;
+            background-color: #E6E6FA;
+            width: 50%;
+            margin: 40px auto;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
         }
-        input {
-            width: calc(100% - 20px);
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
+        .signup-form {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
         }
-        button {
-            background-color: #6a0dad;
-            color: white;
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+        .form-group {
+            width: 48%;
+            margin-bottom: 15px;
+        }
+        .form-group.full {
             width: 100%;
         }
-        button:hover {
-            background-color: #5a0ca3;
-        }
-        .login-link {
-            margin-top: 15px;
-            font-size: 14px;
-        }
-        .login-link a {
-            color: #6a0dad;
-            text-decoration: none;
+        label {
+            font-size: 16px;
             font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
         }
-        .login-link a:hover {
-            text-decoration: underline;
+        input {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #4B0082;
+            border-radius: 5px;
+        }
+        .role-selection {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+        .role-btn {
+            width: 48%;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 2px solid #4B0082;
+            background-color: white;
+            color: #4B0082;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .role-btn.active {
+            background-color: #4B0082;
+            color: white;
+        }
+        .accept-container {
+         display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            width: 100%;
+            gap: 5px;
+        }
+
+        #accept {
+            transform: scale(1.2);
+            margin: 0;
+        }
+
+        .terms-text {
+            font-size: 16px;
+            font-weight: bold;
+            color: #4B0082;
+        }
+
+        .submit-container {
+            text-align: center;
+            margin-top: 20px;
+            width: 100%;
+        }
+        .submit-btn {
+            background-color: #4B0082;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: not-allowed;
+            opacity: 0.5;
+            transition: 0.3s;
+        }
+        .submit-btn.active {
+            cursor: pointer;
+            opacity: 1;
+        }
+        .submit-btn:hover {
+            background-color: #6A0DAD;
         }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <div class="title">Law Records Management System</div>
-        <div>
-            <a href="#">Contact</a>
-            <a href="#">About Us</a>
-        </div>
-    </div>
-    <div class="main-container">
-        <div class="signup-container">
-            <h2>Sign Up</h2>
-            <form id="signup-form">
-                <input type="text" id="name" placeholder="Full Name" required>
-                <input type="email" id="email" placeholder="Email" required>
-                <input type="password" id="password" placeholder="Password" required>
-                <div style="display: flex; justify-content: center; gap: 20px; align-items: center;">
-                    <p>Select your role:</p>
-                    <label><input type="radio" name="role" value="Client" required> Client</label>
-                    <label><input type="radio" name="role" value="Lawyer" required> Lawyer</label>
+
+    <header>Sign Up - Law Records Management System</header>
+
+    <div class="signup-container">
+        <form class="signup-form">
+            <div class="form-group">
+                <label for="fname">First Name</label>
+                <input type="text" id="fname" required>
+            </div>
+            <div class="form-group">
+                <label for="lname">Last Name</label>
+                <input type="text" id="lname" required>
+            </div>
+            <div class="form-group full">
+                <label for="username">Username</label>
+                <input type="text" id="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" required>
+            </div>
+            <div class="form-group full">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="country_code">Country Code</label>
+                <input type="text" id="country_code">
+            </div>
+            <div class="form-group">
+                <label for="phone_no">Phone Number</label>
+                <input type="text" id="phone_no">
+            </div>
+            <div class="form-group">
+                <label for="street_no">Street No</label>
+                <input type="text" id="street_no">
+            </div>
+            <div class="form-group">
+                <label for="street_name">Street Name</label>
+                <input type="text" id="street_name">
+            </div>
+            <div class="form-group">
+                <label for="building_name">Building Name</label>
+                <input type="text" id="building_name">
+            </div>
+            <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" id="city">
+            </div>
+            <div class="form-group">
+                <label for="state">State</label>
+                <input type="text" id="state">
+            </div>
+            <div class="form-group">
+                <label for="pincode">Pincode</label>
+                <input type="text" id="pincode">
+            </div>
+
+            <!-- Role Selection Buttons -->
+            <div class="form-group full">
+                <label>Role</label>
+                <div class="role-selection">
+                    <button type="button" class="role-btn" id="lawyer-btn">Lawyer</button>
+                    <button type="button" class="role-btn" id="client-btn">Client</button>
                 </div>
-                <button type="submit">Sign Up</button>
-            </form>
-            <p class="login-link">Already have an account? <a href="LOGIN.html">Login</a></p>
-        </div>
+            </div>
+
+            <!-- Terms & Conditions -->
+            <div class="accept-container">
+                <input type="checkbox" id="accept">
+                <label for="accept" class="terms-text">I accept all the terms and conditions</label>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="submit-container">
+                <button type="submit" class="submit-btn" id="submit-btn" disabled>Sign Up</button>
+            </div>
+        </form>
     </div>
+
     <script>
-        document.getElementById("signup-form").addEventListener("submit", async function(event) {
+        // Role selection logic
+        let selectedRole = "";
+        document.getElementById("lawyer-btn").addEventListener("click", function() {
+            selectedRole = "Lawyer";
+            document.getElementById("lawyer-btn").classList.add("active");
+            document.getElementById("client-btn").classList.remove("active");
+            validateForm();
+        });
+
+        document.getElementById("client-btn").addEventListener("click", function() {
+            selectedRole = "Client";
+            document.getElementById("client-btn").classList.add("active");
+            document.getElementById("lawyer-btn").classList.remove("active");
+            validateForm();
+        });
+
+        // Enable submit button when checkbox is checked and role is selected
+        function validateForm() {
+            let submitBtn = document.getElementById("submit-btn");
+            let acceptChecked = document.getElementById("accept").checked;
+            
+            if (acceptChecked && selectedRole) {
+                submitBtn.disabled = false;
+                submitBtn.classList.add("active");
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.classList.remove("active");
+            }
+        }
+        
+        document.getElementById("accept").addEventListener("change", validateForm);
+
+        document.querySelector(".signup-form").addEventListener("submit", async function (event) {
             event.preventDefault();
-            const username = document.getElementById("name").value;
-            const email = document.getElementById("email").value;
+
+            // Get password and confirm password values
             const password = document.getElementById("password").value;
-            const role = document.querySelector('input[name="role"]:checked').value;
-            
-            const response = await fetch("http://localhost:5000/signup", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username, email, password, role })
-            });
-            
-            const result = await response.json();
-            alert(result.message);
-            if (response.ok) {
-                window.location.href = "LOGIN.html";
+            const confirmPassword = document.getElementById("confirm-password").value;
+
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                alert("Passwords do not match!");
+                return;
+            }
+
+            // Check if role is selected
+            if (!selectedRole) {
+                alert("Please select a role (Lawyer or Client)!");
+                return;
+            }
+
+            // Disable submit button and show loading state
+            const submitBtn = document.getElementById("submit-btn");
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Signing Up...";
+
+            try {
+                const response = await fetch("http://localhost:5000/signup", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        Fname: document.getElementById("fname").value,
+                        Lname: document.getElementById("lname").value,
+                        username: document.getElementById("username").value,
+                        password,
+                        email: document.getElementById("email").value,
+                        country_code: document.getElementById("country_code").value,
+                        phone_no: document.getElementById("phone_no").value,
+                        street_no: document.getElementById("street_no").value,
+                        street_name: document.getElementById("street_name").value,
+                        building_name: document.getElementById("building_name").value,
+                        city: document.getElementById("city").value,
+                        state: document.getElementById("state").value,
+                        pincode: document.getElementById("pincode").value,
+                        role: selectedRole
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Store the user_id in localStorage
+                    localStorage.setItem("user_id", result.user_id);
+                    alert(result.message);
+                    
+                    // Redirect based on role
+                    if (selectedRole === "Lawyer") {
+                        window.location.href = "/lawyer.html"; // Redirect to lawyer step
+                    } else if (selectedRole === "Client") {
+                        window.location.href = "/client.html"; // Redirect to client step
+                    }
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Server error. Please try again.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = "Sign Up";
             }
         });
     </script>
+
 </body>
 </html>
