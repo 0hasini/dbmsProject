@@ -14,8 +14,7 @@ const dbConfig = {
     host: "localhost",
     user: "root",
     password: "Kandula@@019",
-    database: "lawrecords", // Changed from lawrecords2 to lawrecords
-    port: 3306 
+    database: "project" // Changed from lawrecords2 to lawrecords
 };
 
 // Function to create database connection
@@ -44,7 +43,7 @@ const generateDocumentId = async (db) => {
     return `CD${maxId + 1}`;
 };
 
-// Generate entry ID (format: ED + number)
+// Generate entry ID of the update(format: ED + number)
 const generateEntryId = async (db) => {
     const [result] = await db.execute("SELECT MAX(CAST(SUBSTRING(entry_id, 3) AS UNSIGNED)) as max_id FROM case_updates");
     const maxId = result[0].max_id || 1000;
@@ -140,25 +139,29 @@ app.post("/signup", async (req, res) => {
 
 // Signup - Step 2 for Lawyers
 app.post("/signup/lawyer", async (req, res) => {
-    const user_id = req.headers.user_id;
+    // const user_id = req.headers.user_id;
     const {specialization, license_number} = req.body;
 
-    if(!user_id){
-        return res.status(500).json({
-            msg: "user_id is required"
-        });
-    }
-    else if (!specialization || !license_number) {
+    // if(!user_id){
+    //     return res.status(500).json({
+    //         msg: "user_id is required"
+    //     });
+    // }
+    if (!specialization || !license_number) {
         return res.status(400).json({ 
             msg: "All fields are required" 
         });
     }
 
-    const law_id = localStorage.getItem("user_id");
-
     const db = await createDBConnection();
 
     try {
+        const [lastUser] = await db.execute(
+            "SELECT user_id, role FROM users ORDER BY user_id DESC LIMIT 1"
+        );
+        
+        const user_id = lastUser[0].user_id;
+
         // Check if lawyer already exists with this user_id
         const [existingLawyer] = await db.execute(
             "SELECT lawyer_id FROM lawyers WHERE lawyer_id = ?",
@@ -209,19 +212,19 @@ app.post("/signup/lawyer", async (req, res) => {
 
 // Signup - Step 2 for Clients
 app.post("/signup/client", async (req, res) => {
-    const user_id = req.headers.user_id;
+    // const user_id = req.headers.user_id;
     const {  
         identification_no,
         emergency_contact,
     } = req.body;
 
 
-    if(!user_id){
-        return res.status(500).json({
-            msg: "user_id is required"
-        });
-    }
-    else if (!identification_no || !emergency_contact) {
+    // if(!user_id){
+    //     return res.status(500).json({
+    //         msg: "user_id is required"
+    //     });
+    // }
+    if (!identification_no || !emergency_contact) {
         return res.status(400).json({ 
             msg: "All fields are required" 
         });
@@ -229,7 +232,14 @@ app.post("/signup/client", async (req, res) => {
 
     const db = await createDBConnection();
 
+
     try {
+        const [lastUser] = await db.execute(
+            "SELECT user_id, role FROM users ORDER BY user_id DESC LIMIT 1"
+        );
+        
+        const user_id = lastUser[0].user_id;
+
         // Check if client already exists with this user_id
         const [existingClient] = await db.execute(
             "SELECT client_id FROM clients WHERE client_id = ?",
@@ -264,7 +274,7 @@ app.post("/signup/client", async (req, res) => {
             [user_id, identification_no,emergency_contact]
         );
 
-        res.status(201).json({ 
+        res.status(200).json({ 
             msg: "Client profile completed successfully!" 
         });
 
@@ -278,7 +288,7 @@ app.post("/signup/client", async (req, res) => {
     }
 });
 
-// Creating a new case
+// Creating a new case // by the client
 app.post("/cases", async function (req, res) {
     const { client_id, lawyer_id, case_number, case_type, title, description, status, court_name } = req.body;
 
@@ -600,17 +610,18 @@ app.post("/cases/:id/update", async function (req, res) {
     }
 });
 
-// Get case updates of a certain case_id        
-app.get("/cases/:id/updates", async function (req, res) {
-    const { id } = req.params;  // Case ID
+// Get case updates of a certain client_id 
+app.get("/clients/:id/updates", async function (req, res) {
+    const { id } = req.params;  // Client ID
     const db = await createDBConnection();
 
     try {
         const [updates] = await db.execute(`
-            SELECT cu.*, u.Fname, u.Lname 
+            SELECT cu.*, u.Fname AS LawyerFname, u.Lname AS LawyerLname, c.case_id, c.case_type, c.title AS case_title
             FROM case_updates cu
+            JOIN cases c ON cu.case_id = c.case_id
             JOIN users u ON cu.lawyer_id = u.user_id
-            WHERE cu.case_id = ?
+            WHERE c.client_id = ?
             ORDER BY cu.update_date DESC`,
             [id]
         );
@@ -625,7 +636,8 @@ app.get("/cases/:id/updates", async function (req, res) {
     }
 });
 
-// Upload case document
+
+// Upload case document for a case Id
 app.post("/cases/:id/document", upload.single('document'), async function (req, res) {
     const { id } = req.params;  // Case ID
     const {document_type, status, description } = req.body;
@@ -676,17 +688,19 @@ app.post("/cases/:id/document", upload.single('document'), async function (req, 
     }
 });
 
-// Get case documents
-app.get("/cases/:id/documents", async function (req, res) {
-    const { id } = req.params;  // Case ID
+// Get case documents FOR A SPECIFIC CLIENT_ID
+app.get("/clients/:client_id/documents", async function (req, res) {
+    const { client_id } = req.params; // Client ID
     const db = await createDBConnection();
 
     try {
         const [documents] = await db.execute(`
-            SELECT * FROM case_documents 
-            WHERE case_id = ?
-            ORDER BY created_at DESC`,
-            [id]
+            SELECT cd.*, c.title AS case_title
+            FROM case_documents cd
+            JOIN cases c ON cd.case_id = c.case_id
+            WHERE c.client_id = ?
+            ORDER BY cd.created_at DESC`,
+            [client_id]
         );
 
         res.status(200).json(documents);
@@ -698,6 +712,7 @@ app.get("/cases/:id/documents", async function (req, res) {
         db.end();
     }
 });
+
 
 // Get cases for a specific client
 app.get("/client/:id/cases", async function (req, res) {
