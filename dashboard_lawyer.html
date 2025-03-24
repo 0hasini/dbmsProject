@@ -166,12 +166,56 @@
             document.getElementById('sidebar').classList.toggle('active');
         }
         function logout() {
-            alert("Logging out...");
-            window.location.href = "logout.html";
+            localStorage.removeItem("user_id");
+            window.location.href = "homepage.html";
         }
         window.onload = function() {
             showSection('home');
         };
+
+        async function fetchLawyerCases(lawyerId) {
+            try {
+                const response = await fetch(`http://localhost:5000/lawyer/${lawyerId}/cases`, {
+                    method: "GET"
+                });
+                if (!response.ok) {
+                    throw new Error("Failed to fetch cases");
+                }
+                const cases = await response.json();
+                displayCases(cases);
+            } catch (error) {
+                console.error("Error fetching cases:", error);
+            }
+        }
+
+        function displayCases(cases) {
+            const assignedCasesContainer = document.getElementById("assigned-cases");
+            assignedCasesContainer.innerHTML = "<h2>Assigned Cases</h2>"; // Clear existing content
+
+            if (cases.length === 0) {
+                assignedCasesContainer.innerHTML += "<p>No assigned cases.</p>";
+                return;
+            }
+
+            cases.forEach(caseItem => {
+                const caseBox = document.createElement("div");
+                caseBox.classList.add("case-box");
+                caseBox.innerHTML = `
+                    <h3>Case #${caseItem.case_id} - ${caseItem.case_type}</h3>
+                    <p><strong>Client:</strong> ${caseItem.Fname} ${caseItem.Lname}</p>
+                    <p><strong>Filed:</strong> ${new Date(caseItem.created_at).toLocaleDateString()}</p>
+                    ${caseItem.next_hearing ? `<p><strong>Next Hearing:</strong> ${new Date(caseItem.next_hearing).toLocaleDateString()}</p>` : ""}
+                    `;
+                    assignedCasesContainer.appendChild(caseBox);
+            });
+        }
+
+        const lawyerId = localStorage.getItem("user_id");  // Get client ID from storage or session
+        if (lawyerId) {
+            fetchLawyerCases(lawyerId);
+        } else {
+            console.error("Lawyer ID not found");
+        }
     </script>
 </body>
 </html>
